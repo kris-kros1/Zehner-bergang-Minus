@@ -1,354 +1,671 @@
 <!DOCTYPE html>
+
 <html lang="de">
+
 <head>
+
 <meta charset="UTF-8" />
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>Herzstrategie – Interaktive Aufgaben mit Subtraktion</title>
+
 <style>
+
   :root{
+
     --bg:#f5f5f5;
+
     --card:#ffffff;
+
     --text:#222;
+
     --blue:#8fc0ff;
+
     --blue-dark:#4d8ff5;
+
     --ok:#cfeecf;
+
     --bad:#ffd7d7;
+
   }
+
   *{box-sizing:border-box}
+
   body{
+
     margin:0;
+
     font-family:Arial, sans-serif;
+
     background:var(--bg);
+
     color:var(--text);
+
     text-align:center;
+
     padding:24px;
+
   }
+
   .wrap{
+
     max-width:1200px;
+
     margin:0 auto;
+
     background:var(--card);
+
     border-radius:20px;
+
     padding:24px;
+
     box-shadow:0 10px 30px rgba(0,0,0,.08);
+
   }
+
   h1{margin:0 0 8px}
+
   .sub{margin:0 0 18px; color:#555}
+
   .controls{
+
     display:flex;
+
     justify-content:center;
+
     gap:10px;
+
     flex-wrap:wrap;
+
     margin-bottom:20px;
+
   }
+
   button{
+
     border:none;
+
     border-radius:12px;
+
     padding:12px 18px;
+
     font-size:16px;
+
     cursor:pointer;
+
     background:var(--blue);
+
   }
+
   button.primary{
+
     background:var(--blue-dark);
+
     color:#fff;
+
   }
+
   .grid{
+
     display:grid;
+
     grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+
     gap:18px;
+
     margin-top:18px;
+
   }
+
   .task{
+
     background:#fafafa;
+
     border:2px solid #e4e4e4;
+
     border-radius:18px;
+
     padding:18px 14px;
-    min-height:270px;
+
+    min-height:220px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
   }
+
   .topline, .bottomline{
+
     font-size:28px;
+
     line-height:1.6;
+
     display:flex;
+
     justify-content:center;
+
     align-items:center;
+
     flex-wrap:nowrap;
+
     gap:8px;
+
   }
-  .heartrow{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    gap:14px;
-    margin:10px 0 6px;
-    flex-wrap:wrap;
+
+  .bottomline{
+
+    margin-top:18px;
+
   }
-  .heart-box{
-    position:relative;
-    width:132px;
-    height:110px;
-    flex:0 0 auto;
-  }
-  .heart-svg{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-  }
-  .heart-content{
-    position:absolute;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    font-size:28px;
-    padding-top:8px;
-  }
+
   .slot{
+
     min-width:56px;
+
     height:48px;
+
     border-bottom:4px solid #222;
+
     display:inline-flex;
+
     align-items:center;
+
     justify-content:center;
+
     font-size:28px;
+
     cursor:pointer;
+
     padding:0 6px;
+
     background:transparent;
+
   }
+
   .slot.small{min-width:42px}
+
   .slot.correct{background:var(--ok); border-radius:8px;}
+
   .slot.wrong{background:var(--bad); border-radius:8px;}
-  .pool-title{
-    margin-top:22px;
-    font-size:17px;
-    color:#555;
-  }
-  .pool{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:10px;
-    margin-top:12px;
-    min-height:58px;
-  }
-  .tile{
+
+  .heart-target{
+
+    position:relative;
+
     display:inline-flex;
+
     align-items:center;
+
     justify-content:center;
+
+    gap:8px;
+
+    width:126px;   /* exakt auf letztes Feld + "=" + Ergebnis abgestimmt */
+
+    height:98px;
+
+    margin-left:2px;
+
+  }
+
+  .heart-target svg{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+
+    pointer-events:none;
+
+    opacity:.38;
+
+  }
+
+  .heart-front{
+
+    position:relative;
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:8px;
+
+    padding-top:6px;
+
+  }
+
+  .pool-title{
+
+    margin-top:22px;
+
+    font-size:17px;
+
+    color:#555;
+
+  }
+
+  .pool{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:12px;
+
+    min-height:58px;
+
+  }
+
+  .tile{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
     min-width:58px;
+
     padding:12px 16px;
+
     border-radius:12px;
+
     background:var(--blue);
+
     font-size:24px;
+
     cursor:pointer;
+
     user-select:none;
+
     box-shadow:0 3px 0 rgba(0,0,0,.08);
+
   }
+
   .tile.selected{
+
     background:var(--blue-dark);
+
     color:#fff;
+
     outline:3px solid #dbe7ff;
+
   }
+
   .msg{
+
     min-height:28px;
+
     margin-top:16px;
+
     font-size:18px;
+
   }
+
   .hint{
+
     margin-top:8px;
+
     color:#666;
+
     font-size:14px;
+
   }
+
   @media (max-width:640px){
+
     .topline, .bottomline{font-size:22px}
-    .heart-content{font-size:22px}
+
     .slot{min-width:48px; height:42px; font-size:24px}
-    .heart-box{width:116px; height:98px}
+
+    .heart-target{
+
+      width:112px;
+
+      height:88px;
+
+    }
+
+    .heart-front{
+
+      padding-top:4px;
+
+    }
+
   }
+
 </style>
+
 </head>
+
 <body>
+
   <div class="wrap">
+
     <h1>Herzstrategie – Zahlen online einsetzen</h1>
+
     <p class="sub">Wähle unten eine Zahl und tippe dann auf den passenden Platz.</p>
 
     <div class="controls">
+
       <button id="checkBtn" class="primary">Überprüfen</button>
+
       <button id="clearBtn">Leeren</button>
+
       <button id="newBtn">Neue 6 Aufgaben</button>
+
     </div>
 
     <div id="taskGrid" class="grid"></div>
 
     <div class="pool-title">Vorgegebene Zahlen zum Einsetzen:</div>
+
     <div id="pool" class="pool"></div>
 
     <div id="msg" class="msg"></div>
+
     <div class="hint">Tipp: Die zweite Zahl wird so zerlegt, dass man zuerst bis 10 zurückrechnet.</div>
+
   </div>
 
 <script>
+
   const state = {
+
     tasks: [],
+
     selectedValue: null
+
   };
 
   const grid = document.getElementById('taskGrid');
+
   const pool = document.getElementById('pool');
+
   const msg = document.getElementById('msg');
 
   function shuffle(arr){
+
     const a = arr.slice();
-    for(let i=a.length-1;i>0;i--){
-      const j = Math.floor(Math.random()*(i+1));
-      const tmp = a[i];
-      a[i] = a[j];
-      a[j] = tmp;
+
+    for(let i = a.length - 1; i > 0; i--){
+
+      const j = Math.floor(Math.random() * (i + 1));
+
+      [a[i], a[j]] = [a[j], a[i]];
+
     }
+
     return a;
+
   }
 
   function randInt(min, max){
+
     return Math.floor(Math.random() * (max - min + 1)) + min;
+
   }
 
   function createTask(a, b){
-    const toTen = a - 10;
-    const rest = b - toTen;
+
+    const split1 = a - 10;
+
+    const split2 = b - split1;
+
     return {
-      a: a,
-      b: b,
+
+      a,
+
+      b,
+
       result: a - b,
-      split1: toTen,
-      split2: rest
+
+      split1,
+
+      split2
+
     };
+
   }
 
   function generateTasks(count){
+
     const pairs = [];
+
     const used = new Set();
 
     while(pairs.length < count){
+
       const a = randInt(11, 18);
+
       const ones = a - 10;
+
       const minB = ones + 1;
+
       const b = randInt(minB, 9);
+
       const key = a + '-' + b;
+
       if(!used.has(key)){
+
         used.add(key);
+
         pairs.push(createTask(a, b));
+
       }
+
     }
+
     state.tasks = pairs;
+
   }
 
   function buildTaskHTML(task, i){
+
     return `
+
       <div class="task" data-task="${i}">
+
         <div class="topline">
+
           <span>${task.a}</span>
+
           <span>−</span>
+
           <span>${task.b}</span>
+
           <span>=</span>
+
           <span class="slot" data-answer="${task.result}"></span>
+
         </div>
 
-        <div class="heartrow">
-          <div class="heart-box">
-            <svg class="heart-svg" viewBox="0 0 120 100" aria-hidden="true">
+        <div class="bottomline">
+
+          <span>${task.a}</span>
+
+          <span>−</span>
+
+          <span class="slot small" data-answer="${task.split1}"></span>
+
+          <span>−</span>
+
+          <div class="heart-target">
+
+            <svg viewBox="0 0 120 100" aria-hidden="true">
+
               <path d="M60 92 L52 84 C20 56 8 43 8 25 C8 13 18 4 30 4 C41 4 49 11 60 24 C71 11 79 4 90 4 C102 4 112 13 112 25 C112 43 100 56 68 84 Z"
+
                     fill="white" stroke="#666" stroke-width="2"></path>
+
             </svg>
-            <div class="heart-content">
-              <span>${task.a}</span>
-              <span>−</span>
-              <span class="slot small" data-answer="${task.split1}"></span>
+
+            <div class="heart-front">
+
+              <span class="slot small" data-answer="${task.split2}"></span>
+
+              <span>=</span>
+
+              <span class="slot" data-answer="${task.result}"></span>
+
             </div>
+
           </div>
 
-          <div class="bottomline">
-            <span>=</span>
-            <span>10</span>
-            <span>−</span>
-            <span class="slot small" data-answer="${task.split2}"></span>
-            <span>=</span>
-            <span class="slot" data-answer="${task.result}"></span>
-          </div>
         </div>
+
       </div>
+
     `;
+
   }
 
   function renderTasks(){
+
     grid.innerHTML = state.tasks.map((task, i) => buildTaskHTML(task, i)).join('');
+
     document.querySelectorAll('.slot').forEach(slot => {
+
       slot.addEventListener('click', () => {
+
         if(state.selectedValue === null) return;
+
         slot.textContent = state.selectedValue;
+
         slot.classList.remove('correct', 'wrong');
+
       });
+
     });
+
   }
 
   function renderPool(){
+
     const values = [];
+
     state.tasks.forEach(task => {
+
       values.push(task.result, task.split1, task.split2, task.result);
+
     });
+
     const mixed = shuffle(values);
+
     pool.innerHTML = '';
+
     mixed.forEach(value => {
+
       const tile = document.createElement('div');
+
       tile.className = 'tile';
+
       tile.textContent = value;
+
       tile.dataset.value = value;
+
       tile.addEventListener('click', () => {
+
         document.querySelectorAll('.tile').forEach(t => t.classList.remove('selected'));
+
         tile.classList.add('selected');
+
         state.selectedValue = tile.dataset.value;
+
       });
+
       pool.appendChild(tile);
+
     });
+
   }
 
   function clearAll(){
+
     document.querySelectorAll('.slot').forEach(slot => {
+
       slot.textContent = '';
+
       slot.classList.remove('correct', 'wrong');
+
     });
+
+    document.querySelectorAll('.tile').forEach(t => t.classList.remove('selected'));
+
+    state.selectedValue = null;
+
     msg.textContent = '';
+
   }
 
   function checkAll(){
+
     let ok = true;
+
     document.querySelectorAll('.slot').forEach(slot => {
+
       const correct = String(slot.dataset.answer);
+
       const value = slot.textContent.trim();
+
       slot.classList.remove('correct', 'wrong');
+
       if(value === correct){
+
         slot.classList.add('correct');
+
       } else {
+
         slot.classList.add('wrong');
+
         ok = false;
+
       }
+
     });
+
     msg.textContent = ok ? '✅ Super! Alles richtig.' : '❌ Einige Felder stimmen noch nicht.';
+
   }
 
   function newRound(){
+
     state.selectedValue = null;
+
     generateTasks(6);
+
     renderTasks();
+
     renderPool();
+
     msg.textContent = '';
+
   }
 
   document.getElementById('checkBtn').addEventListener('click', checkAll);
+
   document.getElementById('clearBtn').addEventListener('click', clearAll);
+
   document.getElementById('newBtn').addEventListener('click', newRound);
 
   newRound();
+
 </script>
+
 </body>
+
 </html>
